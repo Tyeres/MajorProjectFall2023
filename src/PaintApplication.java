@@ -1,6 +1,8 @@
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
@@ -12,17 +14,24 @@ public class PaintApplication extends Application {
 
     private static final File CONTACT_NAMES_FOLDER = new File("./src/ContactSaves");
 
+    private final ContactPane contactPane = new ContactPane(40);
+    private final ObservableList<Node> listOfNodes = contactPane.getChildren();
+
     public void start(Stage primaryStage) {
 
-
+        HBox comboAndContactPane = new HBox(5);
+        comboAndContactPane.setPadding(new Insets(10, 3, 0, 3));
+        // This contains the list of names
         ComboBox<String> contactComboBox = new ComboBox<>(getFileNames());
-
-        HBox comboAndContactPane = new HBox();
         comboAndContactPane.getChildren().add(contactComboBox);
-        comboAndContactPane.getChildren().add(new ContactPane());
+        comboAndContactPane.getChildren().add(contactPane);
 
-        Scene scene = new Scene(comboAndContactPane, 700, 650);
+        Scene scene = new Scene(comboAndContactPane, 800, 650);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("Phone Book");
+//        primaryStage.setFullScreenExitHint("Press Esc to exit full screen!\n(You also smell weird)");
+//        primaryStage.setFullScreen(true);
+        primaryStage.setResizable(false);
         primaryStage.show();
 
     }
