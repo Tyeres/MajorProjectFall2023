@@ -9,7 +9,9 @@ public class Contact implements Serializable {
     private long phoneNumber;
     private String phoneNumberFormat;
     private String notes;
+    public Contact() {
 
+    }
     public Contact(String name, String address, GregorianCalendar birthDay, String email, long phoneNumber, String notes) {
         this.name = name;
         this.address = address;
@@ -89,16 +91,16 @@ public class Contact implements Serializable {
     public String getBirthDayFormat() {
         String date = String.valueOf(this.birthDay.getTime());
         int index = date.indexOf(':'); // Date format: Fri Jan 10 00:00:00 EDT 2000
-        String firstHalfDate = date.substring(0, index - 3);
+        String firstHalfDate = date.substring(4, index - 3);
         String secondHalfDate = date.substring(date.length() - 1 - 3);
         return firstHalfDate + ' ' + secondHalfDate;
     }
 
     // This method was used before using ObjectOutputStream to save files. So, this isn't needed anymore.
-    private String getBirthdayFileFormat() {
+    public String getBirthdayFileFormat() {
         // This array cannot be static because this is a Serializable class.
         String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-        String month = this.getBirthDayFormat().substring(4, 7);
+        String month = this.getBirthDayFormat().substring(0, 3);
 
         int monthIndex = 0; // Initiate
         for (int i = 0; i < months.length; i++) {
@@ -108,7 +110,7 @@ public class Contact implements Serializable {
 
         String year = String.valueOf(this.birthDay.getWeekYear());
         String day = this.birthDay.getTime().toString().substring(8, 10);
-        return year + " " + monthIndex + " " + day;
+        return year + " " + (monthIndex + 1) + " " + day;
     }
 
     public void save() {
