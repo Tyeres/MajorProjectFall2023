@@ -228,6 +228,8 @@ public class PaintApplication extends Application {
     private <E extends Comparable<E>> void comparePrint(E e, E r)  {
         if (e.compareTo(r) > 0)
             System.out.println("Larger!");
+        else if (e.compareTo(r) == 0)
+            System.out.println("Equal!");
         else System.out.println("Smaller!");
     }
 
