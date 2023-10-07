@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * This is a more efficient way of sorting an ArrayList<String> than the brute force method.
  */
 public class QuickSort {
-    public static void quickSort (ArrayList<String> list) {
+    public static void quickSort(ArrayList<String> list) {
         quickSort(list, 0, list.size() - 1);
     }
 

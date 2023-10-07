@@ -96,7 +96,7 @@ public class Contact implements Serializable {
         return firstHalfDate + ' ' + secondHalfDate;
     }
 
-    // This method was used before using ObjectOutputStream to save files. So, this isn't needed anymore.
+    // This method returns a String in Year Month Day format
     public String getBirthdayFileFormat() {
         // This array cannot be static because this is a Serializable class.
         String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};

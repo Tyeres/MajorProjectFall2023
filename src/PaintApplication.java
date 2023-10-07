@@ -51,9 +51,10 @@ public class PaintApplication extends Application {
             Contact chosenContact;
 
             // This code is important. When a contact is deleted, the program runs into errors
-            // because it was accessing the deleted Contact. So, when an Exception occurs, the code
-            // switches away from that contact to the first one in the ComboBox, but it doesn't have to
-            // be the first one; it can be any of them.
+            // because it was accessing the deleted Contact. So, when an Exception during deletion,
+            // the code switches away from that contact to the first one in the ComboBox, but it
+            // doesn't have to be the first one; it can be any of them. Point is: it switches away
+            // from the deleted contact.
             try {
                 chosenContact = getSelectedContact(contactName);
             } catch (Exception ex) {
@@ -124,7 +125,7 @@ public class PaintApplication extends Application {
                 contact.save();
                 System.out.println("Saved Successfully");
                 if (!contactComboBox.getItems().contains(nameField.getText()))
-                    contactComboBox.getItems().add(nameField.getText()); // Add name after to the combo box.
+                    contactComboBox.getItems().add(nameField.getText()); // Add name to the combo box.
             }
 
         });
@@ -133,7 +134,7 @@ public class PaintApplication extends Application {
         Button deleteContact = new Button("Delete Contact");
         deleteContact.setOnAction(e->{
             File file = new File("./src/ContactSaves/" + nameField.getText() + ".dat");
-            System.out.println(file.delete()); // Print true or false.
+            System.out.println("File deletion: " + file.delete()); // Print true or false.
             contactComboBox.getItems().remove(nameField.getText());
         });
 
@@ -223,6 +224,13 @@ public class PaintApplication extends Application {
         array[2] = day;
         return array;
     }
+
+    private <E extends Comparable<E>> void comparePrint(E e, E r)  {
+        if (e.compareTo(r) > 0)
+            System.out.println("Larger!");
+        else System.out.println("Smaller!");
+    }
+
 
 
 }
