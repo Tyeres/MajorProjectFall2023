@@ -19,18 +19,18 @@ public class Test {
         
         
         
-        Contact testss = new Contact("Aidan Snyder", "21 Ironmaster Dr",
+        Contact testss = new Contact("Noelle Snyder", "21 Ironmaster Dr",
                 new GregorianCalendar(2003, 4, 18),"aidan@gmail.com", 2405758304L, "");
 
         System.out.println(testss.getBirthDay().getTime());
         testss.setNotes("Hello!!!");
         testss.save();
         try (ObjectInputStream inputStream = new ObjectInputStream(
-                new BufferedInputStream( new FileInputStream("./src/ContactSaves/Aidan Snyder.dat"))))
+                new BufferedInputStream( new FileInputStream("./src/ContactSaves/Noelle Snyder.dat"))))
         {
             Contact d = (Contact) inputStream.readObject();
             System.out.println(d.getName());
-            System.out.println(d.getBirthDayFormat());
+            System.out.println(d.getBirthdayFormat());
             System.out.println(d.getEmail());
         }
         catch (FileNotFoundException e) {

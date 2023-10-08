@@ -65,18 +65,5 @@ public class ContactPane extends VBox {
         Label notesLabel = new Label("Notes: ", notesArea); // If you want to use the ScrollPane, replace NotesArea here with notesScroll
         notesLabel.setContentDisplay(ContentDisplay.RIGHT);
         this.getChildren().add(notesLabel);
-
-
-
-
-    }
-
-    /**
-     * This method returns an empty string if the field is empty.
-     * For example, if the notes TextArea is empty, DEFAULT_MESSAGE is replaced by an empty string.
-     *
-     */
-    public static String getDefaultUpdate() {
-        return "";
     }
 }

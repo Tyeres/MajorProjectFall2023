@@ -7,7 +7,6 @@ public class Contact implements Serializable {
     private GregorianCalendar birthDay;
     private String email;
     private long phoneNumber;
-    private String phoneNumberFormat;
     private String notes;
     public Contact() {
 
@@ -18,11 +17,10 @@ public class Contact implements Serializable {
         this.birthDay = birthDay;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.phoneNumberFormat = getPhoneNumberFormat(phoneNumber);
         this.notes = notes;
     }
 
-    private String getPhoneNumberFormat(long phoneNumber) {
+    public String getPhoneNumberFormat(long phoneNumber) {
         String phoneNumberStr = String.valueOf(phoneNumber);
         String areaCode = phoneNumberStr.substring(0, 3);
         String telephonePrefix = phoneNumberStr.substring(3, 6);
@@ -51,9 +49,6 @@ public class Contact implements Serializable {
         return phoneNumber;
     }
 
-    public String getPhoneNumberFormat() {
-        return phoneNumberFormat;
-    }
 
     public String getNotes() {
         return notes;
@@ -79,16 +74,14 @@ public class Contact implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public void setPhoneNumberFormat(String phoneNumberFormat) {
-        this.phoneNumberFormat = phoneNumberFormat;
-    }
+
 
     public void setNotes(String notes) {
         this.notes = notes;
     }
 
-    // This returns a String in a regular birthday format.
-    public String getBirthDayFormat() {
+    // This returns a String in a date format that is read easily by the user. Format: Fri Jan 10 2000
+    public String getBirthdayFormat() {
         String date = String.valueOf(this.birthDay.getTime());
         int index = date.indexOf(':'); // Date format: Fri Jan 10 00:00:00 EDT 2000
         String firstHalfDate = date.substring(4, index - 3);
@@ -96,11 +89,11 @@ public class Contact implements Serializable {
         return firstHalfDate + ' ' + secondHalfDate;
     }
 
-    // This method returns a String in Year Month Day format
+    // This method returns a String in Year Month Day format. This format is used to save the birthday field for a file.
     public String getBirthdayFileFormat() {
         // This array cannot be static because this is a Serializable class.
         String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-        String month = this.getBirthDayFormat().substring(0, 3);
+        String month = this.getBirthdayFormat().substring(0, 3);
 
         int monthIndex = 0; // Initiate
         for (int i = 0; i < months.length; i++) {
