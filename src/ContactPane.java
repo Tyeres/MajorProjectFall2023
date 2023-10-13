@@ -4,7 +4,7 @@ import javafx.scene.layout.VBox;
 
 // This is used to hold all the data for the Contact
 public class ContactPane extends VBox {
-    private static final String DEFAULT_MESSAGE = "Choose a contact!";
+    public static final String DEFAULT_MESSAGE = "Choose a contact!";
 
     protected static final int PREFERRED_COLUMN_COUNT = 15;
 
@@ -40,7 +40,7 @@ public class ContactPane extends VBox {
         TextField birthdayField = new TextField(DEFAULT_MESSAGE);
         birthdayField.setPrefColumnCount(PREFERRED_COLUMN_COUNT);
         birthdayField.setEditable(false);
-        Label birthdayLabel = new Label("Date of Birth: ", birthdayField);
+        Label birthdayLabel = new Label("Date of Birth: \nFormat: year month day", birthdayField);
         birthdayLabel.setContentDisplay(ContentDisplay.RIGHT);
         this.getChildren().add(birthdayLabel);
 

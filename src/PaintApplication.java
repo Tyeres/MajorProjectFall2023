@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
@@ -12,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.GregorianCalendar;
+import java.util.Stack;
 
 public class PaintApplication extends Application {
 
@@ -43,42 +45,11 @@ public class PaintApplication extends Application {
         ComboBox<String> contactComboBox = new ComboBox<>(listOfNamesBox);
 
         // Set action to combo box
-        contactComboBox.setOnAction(e->{
-            //contactComboBox.getItems().add("Ham burger");
+        contactComboBox.setOnAction(e-> displayContact(contactComboBox));
 
-            String contactName = contactComboBox.getValue();
-            // Find the Contact Object based on the chosen name
-            Contact chosenContact;
-
-            // This code is important. When a contact is deleted, the program runs into errors
-            // because it was accessing the deleted Contact. So, when an Exception during deletion,
-            // the code switches away from that contact to the first one in the ComboBox, but it
-            // doesn't have to be the first one; it can be any of them. Point is: it switches away
-            // from the deleted contact.
-            try {
-                chosenContact = getSelectedContact(contactName);
-            } catch (Exception ex) {
-                String firstName = contactComboBox.getItems().get(0);
-                try {
-                    chosenContact = getSelectedContact(firstName);
-                } catch (Exception exc) {
-                    throw new RuntimeException(exc);
-                }
-            }
-
-
-            // Set the fields
-            nameField.setText(chosenContact.getName());
-            addressField.setText(chosenContact.getAddress());
-            birthdayField.setText(chosenContact.getBirthdayFileFormat());
-            emailField.setText(chosenContact.getEmail());
-            phoneNumberField.setText(String.valueOf(chosenContact.getPhoneNumber()));
-            notesArea.setText(chosenContact.getNotes());
-        });
-
-        // Edit Button.
+        // Create Edit Button.
         Button edit = new Button("Edit Contact");
-        // Set text to black by default
+        // Set text color to black by default
         edit.setTextFill(Paint.valueOf("black"));
         edit.setOnAction(e-> {
             // Fields can be edited
@@ -105,6 +76,7 @@ public class PaintApplication extends Application {
             }
         });
 
+        // Create the save button
         Button saveContact = new Button("Save Contact/Edits");
         saveContact.setOnAction(e->{
             if (!nameField.getText().equals("Choose a contact!")) {
@@ -127,7 +99,6 @@ public class PaintApplication extends Application {
                 if (!contactComboBox.getItems().contains(nameField.getText()))
                     contactComboBox.getItems().add(nameField.getText()); // Add name to the combo box.
             }
-
         });
 
 
@@ -139,17 +110,78 @@ public class PaintApplication extends Application {
         });
 
 
+        // ---------------------------------------------------------
+        /**
+         * This here creates the stack on the right side. It adds email addresses to a text area and to a
+         * stack. It is used to export the email addresses into a text file in the Downloads folder.
+         */
+        BorderPane stackPane = new BorderPane();
+        stackPane.setStyle("-fx-border-color: red");
+        HBox buttonStackPane = new HBox(5);
+        buttonStackPane.setPadding(new Insets(5, 5, 5, 5));
+        Stack<String> stack = new Stack<>();
+        TextArea stackDisplay = new TextArea();
+        stackDisplay.setPrefColumnCount(8);
+        stackDisplay.setEditable(false);
+        Button addToStackButton = new Button("Add Email");
+        addToStackButton.setOnAction(e-> {
+            // Add the Contact's email address to the stack only if a contact has been selected
+            if (!emailField.getText().equals(ContactPane.DEFAULT_MESSAGE)) {
+                stack.push(this.emailField.getText());
+                stackDisplay.setText(stackDisplay.getText() + "\n" + stack.peek());
+            }
+        });
+        Button removeFromStackButton = new Button("Remove Email");
+        removeFromStackButton.setOnAction(e-> {
+            stack.pop(); // Remove head from the actual stack
+            // Now display the change
+            int indexOfLastWhiteSpace = stackDisplay.getText().lastIndexOf("\n");
+            String updatedText = stackDisplay.getText().substring(0, indexOfLastWhiteSpace);
+            stackDisplay.setText(updatedText);
+        });
+        Button exportButton = new Button("Export");
+        exportButton.setOnAction(e-> {
+            if (!stackDisplay.getText().isEmpty()) {
+                // We are saving the file to the user's downloads folder
+                String home = System.getProperty("user.home");
+                File file = new File(home+"/Downloads/" + "Email Addresses" + ".txt");
+                try (PrintWriter exportFile = new PrintWriter(file)){
+                    for (String stackString: stack) {
+                        exportFile.println(stackString);
+                    }
+                } catch (FileNotFoundException ex) {
+                    System.out.println("Export File not Found (Shouldn't be an issue)");
+                }
+            }
+        });
+
+        // Add the button pane to the stack pane. This is done because we want the
+        // buttons in a HBox (holds the buttons) all under the text area.
+        buttonStackPane.getChildren().add(addToStackButton);
+        buttonStackPane.getChildren().add(removeFromStackButton);
+        buttonStackPane.getChildren().add(exportButton);
+        stackPane.setCenter(stackDisplay);
+        stackPane.setBottom(buttonStackPane);
+
+        // --------------------------------------------------
+
+
+
+
+
+
+
         // Add nodes to pane
         mainPane.getChildren().add(contactComboBox);
         mainPane.getChildren().add(contactPane);
-
-        FlowPane buttonsPane = new FlowPane();
-        buttonsPane.setHgap(5);
-        buttonsPane.setVgap(5);
-        buttonsPane.getChildren().add(edit);
-        buttonsPane.getChildren().add(saveContact);
-        buttonsPane.getChildren().add(deleteContact);
-        mainPane.getChildren().add(buttonsPane);
+        FlowPane rightPane = new FlowPane();
+        rightPane.setHgap(5);
+        rightPane.setVgap(5);
+        rightPane.getChildren().add(edit);
+        rightPane.getChildren().add(saveContact);
+        rightPane.getChildren().add(deleteContact);
+        rightPane.getChildren().add(stackPane);
+        mainPane.getChildren().add(rightPane);
 
 
 
@@ -233,6 +265,33 @@ public class PaintApplication extends Application {
         else System.out.println("Smaller!");
     }
 
+    // This method is used to display a contact
+    protected void displayContact(ComboBox<String> contactComboBox) {
+        String contactName = contactComboBox.getValue();
+        // Find the Contact Object based on the chosen name
+        Contact chosenContact;
 
-
+        // This try-catch code is important. When a contact is deleted, the program runs into errors
+        // because it was accessing the deleted Contact. So, when an Exception during deletion,
+        // the code switches away from that contact to the first one in the ComboBox, but it
+        // doesn't have to be the first one; it can be any of them. Point is: it switches away
+        // from the deleted contact.
+        try {
+            chosenContact = getSelectedContact(contactName);
+        } catch (Exception ex) {
+            String firstName = contactComboBox.getItems().get(0);
+            try {
+                chosenContact = getSelectedContact(firstName);
+            } catch (Exception exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+        // Set the fields
+        nameField.setText(chosenContact.getName());
+        addressField.setText(chosenContact.getAddress());
+        birthdayField.setText(chosenContact.getBirthdayFileFormat());
+        emailField.setText(chosenContact.getEmail());
+        phoneNumberField.setText(String.valueOf(chosenContact.getPhoneNumber()));
+        notesArea.setText(chosenContact.getNotes());
+    }
 }
