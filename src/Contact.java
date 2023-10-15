@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.GregorianCalendar;
 
-public class Contact implements Serializable {
+public class Contact implements Comparable<Contact>, Serializable {
     private String name;
     private String address;
     private GregorianCalendar birthDay;
@@ -121,5 +121,11 @@ public class Contact implements Serializable {
             System.exit(-555);
         }
 
+    }
+
+    // Compare by birthdays
+    @Override
+    public int compareTo(Contact o) {
+        return this.getBirthDay().compareTo(o.getBirthDay());
     }
 }

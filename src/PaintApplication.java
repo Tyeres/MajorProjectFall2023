@@ -9,10 +9,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.Stack;
 
 public class PaintApplication extends Application {
@@ -125,22 +127,26 @@ public class PaintApplication extends Application {
         stackDisplay.setEditable(false);
         Button addToStackButton = new Button("Add Email");
         addToStackButton.setOnAction(e-> {
-            // Add the Contact's email address to the stack only if a contact has been selected
+            // Add the Contact's email address to the stack only if a contact has been selected/created.
             if (!emailField.getText().equals(ContactPane.DEFAULT_MESSAGE)) {
                 stack.push(this.emailField.getText());
                 stackDisplay.setText(stackDisplay.getText() + "\n" + stack.peek());
             }
         });
-        Button removeFromStackButton = new Button("Remove Email");
+        Button removeFromStackButton = new Button("Remove Last");
         removeFromStackButton.setOnAction(e-> {
-            stack.pop(); // Remove head from the actual stack
-            // Now display the change
-            int indexOfLastWhiteSpace = stackDisplay.getText().lastIndexOf("\n");
-            String updatedText = stackDisplay.getText().substring(0, indexOfLastWhiteSpace);
-            stackDisplay.setText(updatedText);
+            // The button is not to do anything if a contact hasn't been created/selected and the stack is empty.
+            if (!emailField.getText().equals(ContactPane.DEFAULT_MESSAGE) && !stack.isEmpty()) {
+                stack.pop(); // Remove head from the actual stack
+                // Now display the change
+                int indexOfLastWhiteSpace = stackDisplay.getText().lastIndexOf("\n");
+                String updatedText = stackDisplay.getText().substring(0, indexOfLastWhiteSpace);
+                stackDisplay.setText(updatedText);
+            }
         });
         Button exportButton = new Button("Export");
         exportButton.setOnAction(e-> {
+            // The button is not to do anything if a contact hasn't been created/selected
             if (!stackDisplay.getText().isEmpty()) {
                 // We are saving the file to the user's downloads folder
                 String home = System.getProperty("user.home");
@@ -162,8 +168,75 @@ public class PaintApplication extends Application {
         buttonStackPane.getChildren().add(exportButton);
         stackPane.setCenter(stackDisplay);
         stackPane.setBottom(buttonStackPane);
-
         // --------------------------------------------------
+        /**
+         * This is used to add Contacts to an linkedList and to display the oldest birthday
+         */
+
+        BorderPane largestBirthdayPane = new BorderPane();
+        largestBirthdayPane.setStyle("-fx-border-color: blue");
+        HBox buttonLargestBirthdayPane = new HBox(5);
+        buttonLargestBirthdayPane.setPadding(new Insets(5, 5, 5, 5));
+        LinkedList<Contact> contactLinkedList = new LinkedList<>();
+        TextArea birthdayDisplay = new TextArea();
+        birthdayDisplay.setPrefColumnCount(8);
+        birthdayDisplay.setEditable(false);
+
+        Button addContactButton = new Button("Add Contact");
+        addContactButton.setOnAction(e-> {
+            if (!nameField.getText().equals(ContactPane.DEFAULT_MESSAGE)) {
+                try {
+                    // Add the selected Contact
+                    Contact selectedContact = getSelectedContact(this.nameField.getText());
+                    contactLinkedList.addLast(selectedContact);
+                    birthdayDisplay.setText(birthdayDisplay.getText() + "\n" + selectedContact.getName());
+                } catch (Exception eea) {
+                    System.out.println(eea.getMessage());
+                }
+            }
+        });
+
+        Button removeContactButton = new Button("Remove Last");
+        removeContactButton.setOnAction(e-> {
+            if (!nameField.getText().equals(ContactPane.DEFAULT_MESSAGE) && !contactLinkedList.isEmpty()) {
+                contactLinkedList.removeLast();
+
+                int indexOfLastWhiteSpace = birthdayDisplay.getText().lastIndexOf("\n");
+                String updatedText = birthdayDisplay.getText().substring(0, indexOfLastWhiteSpace);
+                birthdayDisplay.setText(updatedText);
+            }
+
+        });
+
+        Button displayLargestBirthday = new Button("Display Largest DOB");
+        displayLargestBirthday.setOnAction(e-> {
+            if (!contactLinkedList.isEmpty()) {
+                // Initially assume it's the first element
+                Contact largestContact = contactLinkedList.getFirst();
+                // No need to start at index 0 if assuming index 0 is the largest.
+                // Find the largest Contact. It's found by comparing birthdays.
+                for (int i = 1; i < contactLinkedList.size(); i++) {
+                    // Use > instead of < because, for example, 1995 is a greater age than 2005, but it's a small number
+                    if (largestContact.compareTo(contactLinkedList.get(i)) > 0)
+                        largestContact = contactLinkedList.get(i);
+                }
+                Text largestDOBText = new Text(largestContact.getName() + ": " + largestContact.getBirthdayFormat());
+                BorderPane largestDOBContactPane = new BorderPane();
+                largestDOBContactPane.setCenter(largestDOBText);
+                Scene largestDOBScene = new Scene(largestDOBContactPane, 200, 200);
+                Stage largestDOBStage = new Stage();
+                largestDOBStage.setScene(largestDOBScene);
+                largestDOBStage.show();
+            }
+        });
+        buttonLargestBirthdayPane.getChildren().add(addContactButton);
+        buttonLargestBirthdayPane.getChildren().add(removeContactButton);
+        buttonLargestBirthdayPane.getChildren().add(displayLargestBirthday);
+        largestBirthdayPane.setCenter(birthdayDisplay);
+        largestBirthdayPane.setBottom(buttonLargestBirthdayPane);
+        //--------------------------------
+
+
 
 
 
@@ -181,6 +254,7 @@ public class PaintApplication extends Application {
         rightPane.getChildren().add(saveContact);
         rightPane.getChildren().add(deleteContact);
         rightPane.getChildren().add(stackPane);
+        rightPane.getChildren().add(largestBirthdayPane);
         mainPane.getChildren().add(rightPane);
 
 

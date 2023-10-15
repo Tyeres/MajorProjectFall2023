@@ -19,14 +19,14 @@ public class Test {
         
         
         
-        Contact testss = new Contact("Noelle Snyder", "21 Ironmaster Dr",
-                new GregorianCalendar(2003, 4, 18),"aidan@gmail.com", 2405758304L, "");
+        Contact testss = new Contact("Dora Flan", "21 Ironmaster Dr",
+                new GregorianCalendar(2006, 9, 1),"Dora@gmail.com", 2405758304L, "");
 
         System.out.println(testss.getBirthDay().getTime());
         testss.setNotes("Hello!!!");
         testss.save();
         try (ObjectInputStream inputStream = new ObjectInputStream(
-                new BufferedInputStream( new FileInputStream("./src/ContactSaves/Noelle Snyder.dat"))))
+                new BufferedInputStream( new FileInputStream("./src/ContactSaves/Dora Flan.dat"))))
         {
             Contact d = (Contact) inputStream.readObject();
             System.out.println(d.getName());
