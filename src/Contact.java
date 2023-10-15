@@ -123,7 +123,7 @@ public class Contact implements Comparable<Contact>, Serializable {
 
     }
 
-    // Compare by birthdays
+    // Compare by birthdays. The older age is compared as lesser than the younger age.
     @Override
     public int compareTo(Contact o) {
         return this.getBirthDay().compareTo(o.getBirthDay());
