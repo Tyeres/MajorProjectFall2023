@@ -59,6 +59,7 @@ public class ContactPane extends VBox {
         this.getChildren().add(phoneNumberLabel);
 
         TextArea notesArea = new TextArea(DEFAULT_MESSAGE);
+        notesArea.setWrapText(true);
         notesArea.setPrefColumnCount(PREFERRED_COLUMN_COUNT + 7);
         //ScrollPane notesScroll = new ScrollPane(notesArea);
         notesArea.setEditable(false);

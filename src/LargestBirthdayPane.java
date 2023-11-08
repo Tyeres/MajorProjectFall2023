@@ -69,7 +69,7 @@ public class LargestBirthdayPane extends BorderPane {
                 Stage largestDOBStage = new Stage();
                 largestDOBStage.setScene(largestDOBScene);
                 largestDOBStage.setTitle("Largest Age");
-                largestDOBStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail.jpg"));
+                largestDOBStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
                 largestDOBStage.show();
             }
         });

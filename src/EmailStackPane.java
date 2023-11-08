@@ -1,9 +1,13 @@
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,6 +61,16 @@ public class EmailStackPane extends BorderPane {
                 } catch (FileNotFoundException ex) {
                     System.out.println("Export File not Found (Shouldn't be an issue)");
                 }
+
+                Text downloadsText = new Text("File added to Downloads!");
+                BorderPane downloadsPane = new BorderPane();
+                downloadsPane.setCenter(downloadsText);
+                Scene downloadsScene = new Scene(downloadsPane, 300, 300);
+                Stage downloadsStage = new Stage();
+                downloadsStage.setScene(downloadsScene);
+                downloadsStage.setTitle("Emails");
+                downloadsStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
+                downloadsStage.show();
             }
         });
 

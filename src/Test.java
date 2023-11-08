@@ -16,9 +16,9 @@ public class Test {
         }
         QuickSort.quickSort(test);
         System.out.println(test);
-        
-        
-        
+
+
+
         Contact testss = new Contact("Dora Flan", "21 Ironmaster Dr",
                 new GregorianCalendar(2006, 9, 1),"Dora@gmail.com", 2405758304L, "");
 

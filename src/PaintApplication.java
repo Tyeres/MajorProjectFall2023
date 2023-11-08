@@ -6,9 +6,12 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -44,13 +47,51 @@ public class PaintApplication extends Application {
         ComboBox<String> contactComboBox = new ComboBox<>(listOfNamesBox);
 
         // Set action to combo box
-        contactComboBox.setOnAction(e-> displayContact(contactComboBox));
+        contactComboBox.setOnAction(e -> displayContact(contactComboBox));
+
+
+
+
+        // Create the HashTable Map
+        HashTableMap hashTableMap = new HashTableMap();
+        // Search the table
+        TextField searchMapField = new TextField();
+        Label searchLabel = new Label("Search: ", searchMapField);
+        searchLabel.setContentDisplay(ContentDisplay.RIGHT);
+
+        // Search when entered
+        searchMapField.setOnAction(e -> {
+            String searchedName = searchMapField.getText();
+            if (!hashTableMap.search(searchedName))
+                searchMapField.setText("No results found.");
+            else {
+                // Since it was found in the list, the contact must be in the ComboBox. Find it, and display it.
+                try {
+                    Contact chosenContact = getSelectedContact(searchedName);
+                    // Set the fields
+                    nameField.setText(chosenContact.getName());
+                    addressField.setText(chosenContact.getAddress());
+                    birthdayField.setText(chosenContact.getBirthdayFileFormat());
+                    emailField.setText(chosenContact.getEmail());
+                    phoneNumberField.setText(String.valueOf(chosenContact.getPhoneNumber()));
+                    notesArea.setText(chosenContact.getNotes());
+                } catch (Exception e1) {
+                    searchMapField.setText("No results found.");
+                    e1.printStackTrace();
+                }
+            }
+        });
+
+        // Create the pane for the comboBox and the search field
+        VBox searchOptionsPane = new VBox(5);
+        searchOptionsPane.getChildren().add(contactComboBox);
+        searchOptionsPane.getChildren().add(searchLabel);
 
         // Create Edit Button.
         Button edit = new Button("Edit Contact");
         // Set text color to black by default
         edit.setTextFill(Paint.valueOf("black"));
-        edit.setOnAction(e-> {
+        edit.setOnAction(e -> {
             // Fields can be edited
             if (edit.getTextFill().equals(Paint.valueOf("black"))) {
                 edit.setTextFill(Paint.valueOf("red"));
@@ -61,8 +102,7 @@ public class PaintApplication extends Application {
                 phoneNumberField.setEditable(true);
                 notesArea.setEditable(true);
                 edit.setText("Edit Contact\n(Enabled)");
-            }
-            else {
+            } else {
                 // Fields cannot be edited
                 edit.setTextFill(Paint.valueOf("Black"));
                 nameField.setEditable(false);
@@ -77,35 +117,57 @@ public class PaintApplication extends Application {
 
         // Create the save button
         Button saveContact = new Button("Save Contact/Edits");
-        saveContact.setOnAction(e->{
+        saveContact.setOnAction(e -> {
+            // Do not do anything unless a contact is selected or one is being created
             if (!nameField.getText().equals("Choose a contact!")) {
 
-                Contact contact = new Contact();
-                contact.setName(nameField.getText());
-                contact.setAddress(addressField.getText());
+                try {
+                    Contact contact = new Contact();
+                    contact.setName(nameField.getText());
+                    contact.setAddress(addressField.getText());
 
-                // Save birthday
-                String birthdayString = birthdayField.getText();
-                int[] birthDayInts = getBirthdayValues(birthdayString);
-                contact.setBirthDay(new GregorianCalendar(birthDayInts[0], birthDayInts[1], birthDayInts[2]));
+                    // Save birthday
+                    String birthdayString = birthdayField.getText();
+                    int[] birthDayInts = getBirthdayValues(birthdayString);
+                    contact.setBirthDay(new GregorianCalendar(birthDayInts[0], birthDayInts[1], birthDayInts[2]));
 
-                contact.setEmail(emailField.getText());
-                contact.setPhoneNumber(Long.parseLong(phoneNumberField.getText()));
-                contact.setNotes(notesArea.getText());
+                    contact.setEmail(emailField.getText());
+                    contact.setPhoneNumber(Long.parseLong(phoneNumberField.getText()));
+                    contact.setNotes(notesArea.getText());
 
-                contact.save();
-                System.out.println("Saved Successfully");
-                if (!contactComboBox.getItems().contains(nameField.getText()))
-                    contactComboBox.getItems().add(nameField.getText()); // Add name to the combo box.
+                    contact.save();
+                    System.out.println("Saved Successfully");
+                    if (!contactComboBox.getItems().contains(nameField.getText()))
+                        contactComboBox.getItems().add(nameField.getText()); // Add name to the combo box.
+                    // Rebuild the map everytime you save
+                    hashTableMap.buildInitialMap(contactComboBox);
+                } catch (Exception e1) {
+                    // If there is incorrect formatting in the Contact fields, an error window will display.
+                    Text error = new Text("Error. Incorrect Contact Formatting");
+                    BorderPane errorPane = new BorderPane();
+                    errorPane.setCenter(error);
+                    Scene errorScene = new Scene(errorPane, 300, 300);
+                    Stage errorStage = new Stage();
+                    errorStage.setScene(errorScene);
+                    errorStage.setTitle("Error");
+                    errorStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
+                    errorStage.show();
+                }
             }
         });
 
 
         Button deleteContact = new Button("Delete Contact");
-        deleteContact.setOnAction(e->{
-            File file = new File("./src/ContactSaves/" + nameField.getText() + ".dat");
-            System.out.println("File deletion: " + file.delete()); // Print true or false.
-            contactComboBox.getItems().remove(nameField.getText());
+        deleteContact.setOnAction(e -> {
+            // Do not do anything unless a contact is selected
+            if (!nameField.getText().equals("Choose a contact!")) {
+                File file = new File("./src/ContactSaves/" + nameField.getText() + ".dat");
+                System.out.println("File deletion: " + file.delete()); // Print true or false.
+                contactComboBox.getItems().remove(nameField.getText());
+
+                // Rebuild the map everytime you delete
+                hashTableMap.buildInitialMap(contactComboBox);
+            }
         });
 
         // Create pane for the buttons
@@ -117,10 +179,8 @@ public class PaintApplication extends Application {
         mainButtonPane.getChildren().add(deleteContact);
 
 
-
-
         // Add nodes to pane
-        mainPane.getChildren().add(contactComboBox);
+        mainPane.getChildren().add(searchOptionsPane);
         mainPane.getChildren().add(contactPane);
         FlowPane rightPane = new FlowPane();
         rightPane.setHgap(5);
@@ -131,32 +191,25 @@ public class PaintApplication extends Application {
         mainPane.getChildren().add(rightPane);
 
 
-
-        Scene scene = new Scene(mainPane, 950, 650);
+        Scene scene = new Scene(mainPane, 1000, 650);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Phone Book");
-//        primaryStage.setFullScreenExitHint("Press Esc to exit full screen!\n(You also smell weird)");
-//        primaryStage.setFullScreen(true);
         primaryStage.setResizable(true);
-        primaryStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail.jpg"));
+        primaryStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
         primaryStage.show();
-
     }
 
     // Find the file and return the serialized Contact.
     public static Contact getSelectedContact(String name) throws Exception {
         // Input the file name
         try (ObjectInputStream inputStream = new ObjectInputStream(
-                new BufferedInputStream( new FileInputStream("./src/ContactSaves/" + name + ".dat"))))
-        {
+                new BufferedInputStream(new FileInputStream("./src/ContactSaves/" + name + ".dat")))) {
             return (Contact) inputStream.readObject();
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("File not found.");
             System.out.println(e.getMessage());
             throw new FileNotFoundException();
-        }
-        catch (Exception ee) {
+        } catch (Exception ee) {
             System.out.println("Strange error in getSelectedContact method.");
             System.out.println(ee.getMessage());
             throw new Exception();
@@ -164,9 +217,9 @@ public class PaintApplication extends Application {
     }
 
 
-
-    /** This method is used to build the list of names for the ComboBox.
-     It returns the names files in the ContactNames package but without the .dat at the end.
+    /**
+     * This method is used to build the list of names for the ComboBox.
+     * It returns the names files in the ContactNames package but without the .dat at the end.
      */
     private static ObservableList<String> getFileNames() {
         try {
@@ -178,9 +231,7 @@ public class PaintApplication extends Application {
                 namesOfFiles[i] = files[i].getName().substring(0, lengthOfString - 1 - 3);
             }
             return FXCollections.observableArrayList(namesOfFiles);
-        }
-        catch (NullPointerException e)
-        {
+        } catch (NullPointerException e) {
             System.err.println("listOfNames array object points to nothing.");
             System.exit(-111);
         }
@@ -205,7 +256,7 @@ public class PaintApplication extends Application {
         return array;
     }
 
-    private <E extends Comparable<E>> void comparePrint(E e, E r)  {
+    private <E extends Comparable<E>> void comparePrint(E e, E r) {
         if (e.compareTo(r) > 0)
             System.out.println("Larger!");
         else if (e.compareTo(r) == 0)
