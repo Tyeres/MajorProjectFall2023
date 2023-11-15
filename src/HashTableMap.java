@@ -1,10 +1,9 @@
 import java.io.File;
 
-public final class HashTableMap {
+public final class HashTableMap implements ContactDirectory {
 
     private final int mapSize;
 
-    private static final File CONTACT_NAMES_FOLDER = new File("./src/ContactSaves");
 
     // Names are not saved in the map. Instead, initials of names are.
     private String[] initialMap;
@@ -64,8 +63,10 @@ public final class HashTableMap {
     }
 
     /**
-     * This method is called and creates the map every time the ComboBox is updated
+     * This method was meant to be called every time the ComboBox was updated.
+     * However, this was inefficient for its purpose and is now unnecessary.
      */
+    @Deprecated
     public void buildInitialMap(javafx.scene.control.ComboBox<String> comboBox) {
         // Clear the array
         initialMap = new String[mapSize];
@@ -118,6 +119,8 @@ public final class HashTableMap {
             initials = firstInitial + String.valueOf(secondInitial) + lastInitial;
         } else initials = String.valueOf(firstInitial) + lastInitial;
 
+        // The initials should be set to uppercase if names' are always assumed to be capitalized. Otherwise, do not
+        // capitalize the initials. I chose not to set the initials to uppercase.
         return initials;
     }
 }

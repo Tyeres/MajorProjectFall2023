@@ -26,7 +26,6 @@ public class EmailStackPane extends BorderPane {
         buttonStackPane.setPadding(new Insets(5, 5, 5, 5));
         Stack<String> stack = new Stack<>();
         TextArea stackDisplay = new TextArea();
-        stackDisplay.setPrefColumnCount(8);
         stackDisplay.setEditable(false);
         Button addToStackButton = new Button("Add Email");
         addToStackButton.setOnAction(e-> {
@@ -74,6 +73,7 @@ public class EmailStackPane extends BorderPane {
             }
         });
 
+        buttonStackPane.getChildren().add(new Text("Use this to export email\naddresses into a file."));
         // Add the button pane to the stack pane. This is done because we want the
         // buttons in a HBox (holds the buttons) all under the text area.
         buttonStackPane.getChildren().add(addToStackButton);

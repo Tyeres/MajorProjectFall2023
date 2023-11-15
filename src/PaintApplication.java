@@ -17,9 +17,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.GregorianCalendar;
 
-public class PaintApplication extends Application {
-
-    private static final File CONTACT_NAMES_FOLDER = new File("./src/ContactSaves");
+public class PaintApplication extends Application implements ContactDirectory{
 
     private final ContactPane contactPane = new ContactPane(40); // Set gap 40
     private final ObservableList<Node> listOfNodeLabels = contactPane.getChildren();
@@ -40,12 +38,12 @@ public class PaintApplication extends Application {
     public void start(Stage primaryStage) {
 
         HBox mainPane = new HBox(5);
+
         mainPane.setPadding(new Insets(10, 3, 0, 3));
         // This contains the list of names
         ObservableList<String> listOfNamesBox = getFileNames();
         // Give the list of names to the ComboBox
         ComboBox<String> contactComboBox = new ComboBox<>(listOfNamesBox);
-
         // Set action to combo box
         contactComboBox.setOnAction(e -> displayContact(contactComboBox));
 
@@ -65,7 +63,7 @@ public class PaintApplication extends Application {
             if (!hashTableMap.search(searchedName))
                 searchMapField.setText("No results found.");
             else {
-                // Since it was found in the list, the contact must be in the ComboBox. Find it, and display it.
+                // Since it was found in the list, the contact must exist. Find it, and display it.
                 try {
                     Contact chosenContact = getSelectedContact(searchedName);
                     // Set the fields
@@ -77,7 +75,7 @@ public class PaintApplication extends Application {
                     notesArea.setText(chosenContact.getNotes());
                 } catch (Exception e1) {
                     searchMapField.setText("No results found.");
-                    e1.printStackTrace();
+//                    e1.printStackTrace();
                 }
             }
         });
@@ -101,7 +99,7 @@ public class PaintApplication extends Application {
                 emailField.setEditable(true);
                 phoneNumberField.setEditable(true);
                 notesArea.setEditable(true);
-                edit.setText("Edit Contact\n(Enabled)");
+//                edit.setText("Edit Contact\n(Enabled)");
             } else {
                 // Fields cannot be edited
                 edit.setTextFill(Paint.valueOf("Black"));
@@ -137,36 +135,29 @@ public class PaintApplication extends Application {
 
                     contact.save();
                     System.out.println("Saved Successfully");
-                    if (!contactComboBox.getItems().contains(nameField.getText()))
+                    if (!contactComboBox.getItems().contains(nameField.getText())) {
                         contactComboBox.getItems().add(nameField.getText()); // Add name to the combo box.
-                    // Rebuild the map everytime you save
-                    hashTableMap.buildInitialMap(contactComboBox);
+                        hashTableMap.add(nameField.getText()); // Add name to the search map.
+                    }
                 } catch (Exception e1) {
+
                     // If there is incorrect formatting in the Contact fields, an error window will display.
-                    Text error = new Text("Error. Incorrect Contact Formatting");
-                    BorderPane errorPane = new BorderPane();
-                    errorPane.setCenter(error);
-                    Scene errorScene = new Scene(errorPane, 300, 300);
-                    Stage errorStage = new Stage();
-                    errorStage.setScene(errorScene);
-                    errorStage.setTitle("Error");
+                    Stage errorStage = getErrorFormattingStage();
                     errorStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
                     errorStage.show();
                 }
             }
         });
 
-
+        // Create the delete button
         Button deleteContact = new Button("Delete Contact");
         deleteContact.setOnAction(e -> {
             // Do not do anything unless a contact is selected
             if (!nameField.getText().equals("Choose a contact!")) {
                 File file = new File("./src/ContactSaves/" + nameField.getText() + ".dat");
                 System.out.println("File deletion: " + file.delete()); // Print true or false.
-                contactComboBox.getItems().remove(nameField.getText());
-
-                // Rebuild the map everytime you delete
-                hashTableMap.buildInitialMap(contactComboBox);
+                contactComboBox.getItems().remove(nameField.getText()); // Remove name from combo box
+                hashTableMap.remove(nameField.getText()); // Remove name from the search map
             }
         });
 
@@ -188,10 +179,11 @@ public class PaintApplication extends Application {
         rightPane.getChildren().add(mainButtonPane);
         rightPane.getChildren().add(new EmailStackPane(this.emailField));
         rightPane.getChildren().add(new LargestBirthdayPane(this.nameField));
+        rightPane.getChildren().add(new FindPhoneNumberPane());
         mainPane.getChildren().add(rightPane);
 
 
-        Scene scene = new Scene(mainPane, 1000, 650);
+        Scene scene = new Scene(mainPane, 1100, 650);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Phone Book");
         primaryStage.setResizable(true);
@@ -199,11 +191,23 @@ public class PaintApplication extends Application {
         primaryStage.show();
     }
 
+    private static Stage getErrorFormattingStage() {
+        Text error = new Text("Error. Incorrect Contact Formatting");
+        BorderPane errorPane = new BorderPane();
+        errorPane.setCenter(error);
+        Scene errorScene = new Scene(errorPane, 300, 300);
+        Stage errorStage = new Stage();
+        errorStage.setScene(errorScene);
+        errorStage.setTitle("Error");
+        return errorStage;
+    }
+
     // Find the file and return the serialized Contact.
     public static Contact getSelectedContact(String name) throws Exception {
         // Input the file name
         try (ObjectInputStream inputStream = new ObjectInputStream(
                 new BufferedInputStream(new FileInputStream("./src/ContactSaves/" + name + ".dat")))) {
+            // There is only one Contact object per file, which is the searched object. Return it.
             return (Contact) inputStream.readObject();
         } catch (FileNotFoundException e) {
             System.out.println("File not found.");
@@ -285,6 +289,12 @@ public class PaintApplication extends Application {
                 throw new RuntimeException(exc);
             }
         }
+        displayContact(chosenContact, this.nameField, this.addressField, this.birthdayField,
+                this.emailField, this.phoneNumberField, this.notesArea);
+    }
+    public static void displayContact(Contact chosenContact, TextField nameField, TextField addressField, TextField birthdayField,
+                                      TextField emailField, TextField phoneNumberField, TextArea notesArea) {
+
         // Set the fields
         nameField.setText(chosenContact.getName());
         addressField.setText(chosenContact.getAddress());

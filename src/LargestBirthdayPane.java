@@ -73,6 +73,7 @@ public class LargestBirthdayPane extends BorderPane {
                 largestDOBStage.show();
             }
         });
+        buttonLargestBirthdayPane.getChildren().add(new Text("Use this to display the\nlargest birthday of\nselected contacts."));
         buttonLargestBirthdayPane.getChildren().add(addContactButton);
         buttonLargestBirthdayPane.getChildren().add(removeContactButton);
         buttonLargestBirthdayPane.getChildren().add(displayLargestBirthday);
