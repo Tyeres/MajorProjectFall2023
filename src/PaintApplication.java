@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.GregorianCalendar;
 
-public class PaintApplication extends Application implements ContactDirectory{
+public class PaintApplication extends Application implements ContactDirectory {
 
     private final ContactPane contactPane = new ContactPane(40); // Set gap 40
     private final ObservableList<Node> listOfNodeLabels = contactPane.getChildren();
@@ -202,7 +202,7 @@ public class PaintApplication extends Application implements ContactDirectory{
         return errorStage;
     }
 
-    // Find the file and return the serialized Contact.
+    /** Find the file and return the serialized Contact. */
     public static Contact getSelectedContact(String name) throws Exception {
         // Input the file name
         try (ObjectInputStream inputStream = new ObjectInputStream(

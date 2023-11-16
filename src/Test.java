@@ -2,20 +2,11 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 public class Test {
 
     public static void main(String[] args) {
-
-        ArrayList<String> test = new ArrayList<>();
-        for (int i = 'Z'; i >= 'A'; i--) {
-            char c = (char) i;
-            test.add(c + "");
-        }
-        QuickSort.quickSort(test);
-        System.out.println(test);
 
 
 

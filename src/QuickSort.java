@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -6,11 +6,11 @@ import java.util.ArrayList;
  * This is a more efficient way of sorting an ArrayList<String> than the brute force method.
  */
 public class QuickSort {
-    public static void quickSort(ArrayList<String> list) {
+    public static void quickSort(List<Contact> list) {
         quickSort(list, 0, list.size() - 1);
     }
 
-    protected static void quickSort(ArrayList<String> list, int first, int last) {
+    protected static void quickSort(List<Contact> list, int first, int last) {
         if (last > first) {
             int pivotIndex = partition(list, first, last);
             quickSort(list, first, pivotIndex - 1);
@@ -19,8 +19,8 @@ public class QuickSort {
     }
 
 
-    protected static int partition(ArrayList<String> list, int first, int last) {
-        String pivot = list.get(first); // Choose the first element as the pivot
+    protected static int partition(List<Contact> list, int first, int last) {
+        Contact pivot = list.get(first); // Choose the first element as the pivot
         int low = first + 1; // Index for forward search
         int high = last; // Index for backward search
 
@@ -35,7 +35,7 @@ public class QuickSort {
 
             // Swap two elements in the list
             if (high > low) {
-                String temp = list.get(high);
+                Contact temp = list.get(high);
                 list.set(high, list.get(low));
                 list.set(low, temp);
             }

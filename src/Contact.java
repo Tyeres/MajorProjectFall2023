@@ -9,7 +9,6 @@ public class Contact implements Comparable<Contact>, Serializable {
     private long phoneNumber;
     private String notes;
     public Contact() {
-
     }
     public Contact(String name, String address, GregorianCalendar birthDay, String email, long phoneNumber, String notes) {
         this.name = name;
@@ -26,7 +25,6 @@ public class Contact implements Comparable<Contact>, Serializable {
         String telephonePrefix = phoneNumberStr.substring(3, 6);
         String lineNumber = phoneNumberStr.substring(6, 10);
         return "(" + areaCode + ") " + telephonePrefix + "-" + lineNumber;
-
     }
 
     public String getName() {
@@ -120,12 +118,15 @@ public class Contact implements Comparable<Contact>, Serializable {
             System.err.println("Issue with saving.");
             System.exit(-555);
         }
-
     }
 
     // Compare by birthdays. The older age is compared as lesser than the younger age.
     @Override
     public int compareTo(Contact o) {
         return this.getBirthDay().compareTo(o.getBirthDay());
+    }
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

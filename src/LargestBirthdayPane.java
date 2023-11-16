@@ -71,6 +71,9 @@ public class LargestBirthdayPane extends BorderPane {
                 largestDOBStage.setTitle("Largest Age");
                 largestDOBStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
                 largestDOBStage.show();
+                // For developer purposes, sort it and print it.
+                QuickSort.quickSort(contactLinkedList);
+                System.out.println(contactLinkedList);
             }
         });
         buttonLargestBirthdayPane.getChildren().add(new Text("Use this to display the\nlargest birthday of\nselected contacts."));

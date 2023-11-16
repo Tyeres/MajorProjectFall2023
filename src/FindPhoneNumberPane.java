@@ -48,8 +48,8 @@ public class FindPhoneNumberPane extends javafx.scene.layout.HBox implements Con
         });
 
 
-        this.getChildren().add(new Text("Finds a contact with a\n" +
-                "specified number sequence\nin his/her phone number"));
+        this.getChildren().add(new Text("Confirms if a contact with a\n" +
+                "specified phone number exists."));
         this.getChildren().add(searchNumberField);
         this.getChildren().add(searchButton);
     }
