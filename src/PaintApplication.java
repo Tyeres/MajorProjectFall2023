@@ -48,8 +48,6 @@ public class PaintApplication extends Application implements ContactDirectory {
         contactComboBox.setOnAction(e -> displayContact(contactComboBox));
 
 
-
-
         // Create the HashTable Map
         HashTableMap hashTableMap = new HashTableMap();
         // Search the table
@@ -117,7 +115,7 @@ public class PaintApplication extends Application implements ContactDirectory {
         Button saveContact = new Button("Save Contact/Edits");
         saveContact.setOnAction(e -> {
             // Do not do anything unless a contact is selected or one is being created
-            if (!nameField.getText().equals("Choose a contact!")) {
+            if (!nameField.getText().equals("Choose a contact!") && fieldsFull()) {
 
                 try {
                     Contact contact = new Contact();
@@ -142,9 +140,7 @@ public class PaintApplication extends Application implements ContactDirectory {
                 } catch (Exception e1) {
 
                     // If there is incorrect formatting in the Contact fields, an error window will display.
-                    Stage errorStage = getErrorFormattingStage();
-                    errorStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
-                    errorStage.show();
+                    getErrorFormattingStage().show();
                 }
             }
         });
@@ -180,15 +176,23 @@ public class PaintApplication extends Application implements ContactDirectory {
         rightPane.getChildren().add(new EmailStackPane(this.emailField));
         rightPane.getChildren().add(new LargestBirthdayPane(this.nameField));
         rightPane.getChildren().add(new FindPhoneNumberPane());
+        TransferContactPane transferContactPane = new TransferContactPane(contactComboBox);
+        rightPane.getChildren().add(transferContactPane);
+
         mainPane.getChildren().add(rightPane);
 
 
-        Scene scene = new Scene(mainPane, 1100, 650);
+        Scene scene = new Scene(mainPane, 1100, 750);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Phone Book");
         primaryStage.setResizable(true);
         primaryStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
         primaryStage.show();
+
+        /* The receiveContact button, when pressed, releases a thread that will keep the program running
+        when everything is closed. So, this makes sure that the program closes when the primaryStage closes.
+        */
+        primaryStage.setOnCloseRequest(e->System.exit(0));
     }
 
     private static Stage getErrorFormattingStage() {
@@ -199,10 +203,13 @@ public class PaintApplication extends Application implements ContactDirectory {
         Stage errorStage = new Stage();
         errorStage.setScene(errorScene);
         errorStage.setTitle("Error");
+        errorStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
         return errorStage;
     }
 
-    /** Find the file and return the serialized Contact. */
+    /**
+     * Find the file and return the serialized Contact.
+     */
     public static Contact getSelectedContact(String name) throws Exception {
         // Input the file name
         try (ObjectInputStream inputStream = new ObjectInputStream(
@@ -292,6 +299,7 @@ public class PaintApplication extends Application implements ContactDirectory {
         displayContact(chosenContact, this.nameField, this.addressField, this.birthdayField,
                 this.emailField, this.phoneNumberField, this.notesArea);
     }
+
     public static void displayContact(Contact chosenContact, TextField nameField, TextField addressField, TextField birthdayField,
                                       TextField emailField, TextField phoneNumberField, TextArea notesArea) {
 
@@ -302,5 +310,15 @@ public class PaintApplication extends Application implements ContactDirectory {
         emailField.setText(chosenContact.getEmail());
         phoneNumberField.setText(String.valueOf(chosenContact.getPhoneNumber()));
         notesArea.setText(chosenContact.getNotes());
+    }
+
+    /**
+     * This method returns true if all the fields are filled in. The notes text area is ignored
+     * because that is allowed to be empty.
+     */
+    public boolean fieldsFull() {
+        return (!this.nameField.getText().isEmpty()) && (!this.addressField.getText().isEmpty())
+                && (!this.birthdayField.getText().isEmpty()) && (!emailField.getText().isEmpty())
+                && (!this.phoneNumberField.getText().isEmpty());
     }
 }

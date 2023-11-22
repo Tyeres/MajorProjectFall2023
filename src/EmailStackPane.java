@@ -15,6 +15,10 @@ import java.io.PrintWriter;
 import java.util.Stack;
 
 public class EmailStackPane extends BorderPane {
+    private EmailStackPane() {
+
+    }
+
     /**
      * This here creates the stack on the right side. It adds email addresses to a text area and to a
      * stack. It is used to export the email addresses into a text file in the Downloads folder.

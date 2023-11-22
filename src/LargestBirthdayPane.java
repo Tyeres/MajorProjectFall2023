@@ -12,6 +12,9 @@ import javafx.stage.Stage;
 import java.util.LinkedList;
 
 public class LargestBirthdayPane extends BorderPane {
+    private LargestBirthdayPane() {
+
+    }
     /**
      * This is used to add Contacts to an linkedList and to display the oldest birthday
      */
@@ -71,7 +74,7 @@ public class LargestBirthdayPane extends BorderPane {
                 largestDOBStage.setTitle("Largest Age");
                 largestDOBStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
                 largestDOBStage.show();
-                // For developer purposes, sort it and print it.
+                // For developer purposes. Sort it and print it.
                 QuickSort.quickSort(contactLinkedList);
                 System.out.println(contactLinkedList);
             }
