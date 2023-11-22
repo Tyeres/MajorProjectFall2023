@@ -42,10 +42,11 @@ public class PaintApplication extends Application implements ContactDirectory {
         mainPane.setPadding(new Insets(10, 3, 0, 3));
         // This contains the list of names
         ObservableList<String> listOfNamesBox = getFileNames();
-        // Give the list of names to the ComboBox
-        ComboBox<String> contactComboBox = new ComboBox<>(listOfNamesBox);
+        // Give the list of names to the ListView
+        ListView<String> contactListView = new ListView<>(listOfNamesBox);
+        contactListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         // Set action to combo box
-        contactComboBox.setOnAction(e -> displayContact(contactComboBox));
+        contactListView.getSelectionModel().selectedItemProperty().addListener(e->displayContact(contactListView));
 
 
         // Create the HashTable Map
@@ -80,8 +81,9 @@ public class PaintApplication extends Application implements ContactDirectory {
 
         // Create the pane for the comboBox and the search field
         VBox searchOptionsPane = new VBox(5);
-        searchOptionsPane.getChildren().add(contactComboBox);
         searchOptionsPane.getChildren().add(searchLabel);
+        searchOptionsPane.getChildren().add(contactListView);
+
 
         // Create Edit Button.
         Button edit = new Button("Edit Contact");
@@ -133,8 +135,8 @@ public class PaintApplication extends Application implements ContactDirectory {
 
                     contact.save();
                     System.out.println("Saved Successfully");
-                    if (!contactComboBox.getItems().contains(nameField.getText())) {
-                        contactComboBox.getItems().add(nameField.getText()); // Add name to the combo box.
+                    if (!contactListView.getItems().contains(nameField.getText())) {
+                        contactListView.getItems().add(nameField.getText()); // Add name to the combo box.
                         hashTableMap.add(nameField.getText()); // Add name to the search map.
                     }
                 } catch (Exception e1) {
@@ -152,7 +154,7 @@ public class PaintApplication extends Application implements ContactDirectory {
             if (!nameField.getText().equals("Choose a contact!")) {
                 File file = new File("./src/ContactSaves/" + nameField.getText() + ".dat");
                 System.out.println("File deletion: " + file.delete()); // Print true or false.
-                contactComboBox.getItems().remove(nameField.getText()); // Remove name from combo box
+                contactListView.getItems().remove(nameField.getText()); // Remove name from combo box
                 hashTableMap.remove(nameField.getText()); // Remove name from the search map
             }
         });
@@ -176,18 +178,23 @@ public class PaintApplication extends Application implements ContactDirectory {
         rightPane.getChildren().add(new EmailStackPane(this.emailField));
         rightPane.getChildren().add(new LargestBirthdayPane(this.nameField));
         rightPane.getChildren().add(new FindPhoneNumberPane());
-        TransferContactPane transferContactPane = new TransferContactPane(contactComboBox);
+        TransferContactPane transferContactPane = new TransferContactPane(contactListView);
         rightPane.getChildren().add(transferContactPane);
 
         mainPane.getChildren().add(rightPane);
 
 
-        Scene scene = new Scene(mainPane, 1100, 750);
+        Scene scene = new Scene(mainPane, 1200, 750);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Phone Book");
         primaryStage.setResizable(true);
         primaryStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
         primaryStage.show();
+
+        // Control the height of the ListView. Make sure it's the length of the window at all times.
+        contactListView.setPrefHeight(primaryStage.getHeight() - 100);
+        primaryStage.heightProperty().addListener(
+                e->contactListView.setPrefHeight(primaryStage.getHeight() - 100));
 
         /* The receiveContact button, when pressed, releases a thread that will keep the program running
         when everything is closed. So, this makes sure that the program closes when the primaryStage closes.
@@ -276,8 +283,8 @@ public class PaintApplication extends Application implements ContactDirectory {
     }
 
     // This method is used to display a contact
-    protected void displayContact(ComboBox<String> contactComboBox) {
-        String contactName = contactComboBox.getValue();
+    protected void displayContact(ListView<String> contactComboBox) {
+        String contactName = contactComboBox.getSelectionModel().getSelectedItem();
         // Find the Contact Object based on the chosen name
         Contact chosenContact;
 

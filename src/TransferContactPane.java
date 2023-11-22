@@ -7,7 +7,7 @@ public class TransferContactPane extends javafx.scene.layout.BorderPane {
     private TransferContactPane() {
 
     }
-    public TransferContactPane(ComboBox<String> comboBox) {
+    public TransferContactPane(ListView<String> listView) {
             this.setPadding(new Insets(5, 5, 5, 5));
             this.setStyle("-fx-border-color: lightgreen");
 
@@ -27,7 +27,7 @@ public class TransferContactPane extends javafx.scene.layout.BorderPane {
                 if (!IPField.getText().isEmpty()) {
                     ContactSender contactSender = new ContactSender(IPField.getText());
                     try {
-                        Contact contact = PaintApplication.getSelectedContact(comboBox.getValue());
+                        Contact contact = PaintApplication.getSelectedContact(listView.getSelectionModel().getSelectedItem());
                         contactSender.sendContact(contact);
                     } catch (Exception ex) {
                         // Do nothing. This means that no contact has yet been selected.
