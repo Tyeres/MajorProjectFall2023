@@ -9,7 +9,7 @@ public class TransferContactPane extends javafx.scene.layout.BorderPane {
     }
     public TransferContactPane(ListView<String> listView) {
             this.setPadding(new Insets(5, 5, 5, 5));
-            this.setStyle("-fx-border-color: lightgreen");
+            this.setStyle("-fx-border-color: green");
 
             VBox sendPane = new VBox(5);
             sendPane.setPadding(new Insets(5, 5, 5, 5));
@@ -47,7 +47,7 @@ public class TransferContactPane extends javafx.scene.layout.BorderPane {
 
             receivePane.getChildren().add(receiveContactButton);
 
-            receiveContactButton.setOnAction(e->ContactReceiver.receiveContact(receiveContactButton));
+            receiveContactButton.setOnAction(e->ContactReceiver.receiveContact(receiveContactButton, listView));
 
             this.setRight(receivePane);
     }

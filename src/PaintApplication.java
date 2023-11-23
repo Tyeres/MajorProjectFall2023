@@ -45,7 +45,7 @@ public class PaintApplication extends Application implements ContactDirectory {
         // Give the list of names to the ListView
         ListView<String> contactListView = new ListView<>(listOfNamesBox);
         contactListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        // Set action to combo box
+        // Set action to listView
         contactListView.getSelectionModel().selectedItemProperty().addListener(e->displayContact(contactListView));
 
 
@@ -143,6 +143,7 @@ public class PaintApplication extends Application implements ContactDirectory {
 
                     // If there is incorrect formatting in the Contact fields, an error window will display.
                     getErrorFormattingStage().show();
+                    e1.printStackTrace();
                 }
             }
         });
@@ -236,7 +237,7 @@ public class PaintApplication extends Application implements ContactDirectory {
 
 
     /**
-     * This method is used to build the list of names for the ComboBox.
+     * This method is used to build the list of names for the ListView.
      * It returns the names files in the ContactNames package but without the .dat at the end.
      */
     private static ObservableList<String> getFileNames() {
@@ -263,10 +264,10 @@ public class PaintApplication extends Application implements ContactDirectory {
      */
     public int[] getBirthdayValues(String dateStr) {
         int year = Integer.parseInt(dateStr.substring(0, 4));
-        String monthAndDay = dateStr.substring(5);
-        int indexOfSpace = monthAndDay.indexOf(' '); // For example: 2003 5 18 ...Gets the space before 18.
-        int month = Integer.parseInt(monthAndDay.substring(0, indexOfSpace));
-        int day = Integer.parseInt(monthAndDay.substring(indexOfSpace + 1));
+        int indexOfFirstSlash = dateStr.indexOf('/');
+        int indexOfLastSlash = dateStr.lastIndexOf('/'); // For example: 1999/05/12 ...Gets the / before 12.
+        int month = Integer.parseInt(dateStr.substring(indexOfFirstSlash + 1, indexOfLastSlash));
+        int day = Integer.parseInt(dateStr.substring(indexOfLastSlash + 1));
         int[] array = new int[3];
         array[0] = year;
         array[1] = month - 1; // Subtract one so that it's an index
@@ -290,7 +291,7 @@ public class PaintApplication extends Application implements ContactDirectory {
 
         // This try-catch code is important. When a contact is deleted, the program runs into errors
         // because it was accessing the deleted Contact. So, when an Exception during deletion,
-        // the code switches away from that contact to the first one in the ComboBox, but it
+        // the code switches away from that contact to the first one in the ListView, but it
         // doesn't have to be the first one; it can be any of them. Point is: it switches away
         // from the deleted contact.
         try {

@@ -1,7 +1,10 @@
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -19,7 +22,7 @@ public class ContactReceiver {
      * the receiveContact method in a Thread to prevent the JavaFX UI
      * from freezing up.
      */
-    public static void receiveContact(Button button) {
+    public static void receiveContact(Button button, ListView<String> listView) {
         new Thread(()->{
             try {
                 button.setStyle("-fx-background-color: red");
@@ -29,18 +32,22 @@ public class ContactReceiver {
                 Contact contact = (Contact) input.readObject();
                 contact.save();
                 button.setStyle(null);
+                button.setTextFill(Color.BLACK);
 
-                Text downloadsText = new Text("Downloaded a Contact!");
-                BorderPane downloadsPane = new BorderPane();
-                downloadsPane.setCenter(downloadsText);
-                Scene downloadsScene = new Scene(downloadsPane, 300, 300);
-                Stage downloadsStage = new Stage();
-                downloadsStage.setScene(downloadsScene);
-                downloadsStage.setTitle("Emails");
-                downloadsStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
-                downloadsStage.show();
+                Platform.runLater(()->{
+                    listView.getItems().add(contact.getName());
+                    Text downloadsText = new Text("Downloaded a Contact!");
+                    BorderPane downloadsPane = new BorderPane();
+                    downloadsPane.setCenter(downloadsText);
+                    Scene downloadsScene = new Scene(downloadsPane, 300, 300);
+                    Stage downloadsStage = new Stage();
+                    downloadsStage.setScene(downloadsScene);
+                    downloadsStage.setTitle("Emails");
+                    downloadsStage.getIcons().add(new Image("Thumbnails/Phone Book Thumbnail 2.jpg"));
+                    downloadsStage.show();
+                });
             } catch (IOException | ClassNotFoundException e) {
-                System.err.println("ContactReceiver error.\nContactReceiver.java");
+                System.out.println("ContactReceiver.java");
                 /* Will produce an error if more than one thread is running. This is great, because
                  it makes sure only one thread runs at a time. I believe the error comes from
                  attempting to create the ServerSocket object from separate threads (I am too lazy to verify).

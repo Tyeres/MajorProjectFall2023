@@ -101,7 +101,7 @@ public class Contact implements Comparable<Contact>, Serializable {
 
         String year = String.valueOf(this.birthDay.getWeekYear());
         String day = this.birthDay.getTime().toString().substring(8, 10);
-        return year + " " + (monthIndex + 1) + " " + day;
+        return year + "/" + (monthIndex + 1) + "/" + day;
     }
 
     public void save() {
