@@ -13,7 +13,6 @@ import java.util.LinkedList;
 
 public class LargestBirthdayPane extends BorderPane {
     private LargestBirthdayPane() {
-
     }
     /**
      * This is used to add Contacts to an linkedList and to display the oldest birthday

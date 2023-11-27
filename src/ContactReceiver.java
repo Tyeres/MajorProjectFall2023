@@ -18,7 +18,7 @@ public class ContactReceiver {
 
     /**
      * This method receives and saves a contact as a file.
-     * Since this method uses the accept() method, make sure to use
+     * Since this method uses the accept() method, this uses
      * the receiveContact method in a Thread to prevent the JavaFX UI
      * from freezing up.
      */
@@ -47,7 +47,7 @@ public class ContactReceiver {
                     downloadsStage.show();
                 });
             } catch (IOException | ClassNotFoundException e) {
-                System.out.println("ContactReceiver.java");
+                System.out.println("ContactReceiver.java double click");
                 /* Will produce an error if more than one thread is running. This is great, because
                  it makes sure only one thread runs at a time. I believe the error comes from
                  attempting to create the ServerSocket object from separate threads (I am too lazy to verify).

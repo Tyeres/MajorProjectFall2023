@@ -13,7 +13,7 @@ public class FindPhoneNumberPane extends javafx.scene.layout.HBox implements Con
 
 
     public FindPhoneNumberPane() {
-        this.setStyle("-fx-border-color: green");
+        this.setStyle("-fx-border-color: purple");
         this.setPadding(new Insets(5, 5, 5, 5));
 
         // Build the 2-4 Tree

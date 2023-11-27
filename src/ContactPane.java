@@ -40,7 +40,7 @@ public class ContactPane extends VBox {
         TextField birthdayField = new TextField(DEFAULT_MESSAGE);
         birthdayField.setPrefColumnCount(PREFERRED_COLUMN_COUNT);
         birthdayField.setEditable(false);
-        Label birthdayLabel = new Label("Date of Birth: \nFormat: year month day", birthdayField);
+        Label birthdayLabel = new Label("Date of Birth: \nFormat: year/month/day", birthdayField);
         birthdayLabel.setContentDisplay(ContentDisplay.RIGHT);
         this.getChildren().add(birthdayLabel);
 

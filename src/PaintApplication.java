@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.util.GregorianCalendar;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PaintApplication extends Application implements ContactDirectory {
 
@@ -84,6 +85,11 @@ public class PaintApplication extends Application implements ContactDirectory {
         searchOptionsPane.getChildren().add(searchLabel);
         searchOptionsPane.getChildren().add(contactListView);
 
+        Button newContactBT = new Button("New Contact");
+        newContactBT.setOnAction(e-> {
+            contactListView.getSelectionModel().clearSelection();
+            clearFields();
+        });
 
         // Create Edit Button.
         Button edit = new Button("Edit Contact");
@@ -117,7 +123,7 @@ public class PaintApplication extends Application implements ContactDirectory {
         Button saveContact = new Button("Save Contact/Edits");
         saveContact.setOnAction(e -> {
             // Do not do anything unless a contact is selected or one is being created
-            if (!nameField.getText().equals("Choose a contact!") && fieldsFull()) {
+            if (!nameField.getText().equals("Choose a contact!") && isFieldsFull()) {
 
                 try {
                     Contact contact = new Contact();
@@ -155,33 +161,47 @@ public class PaintApplication extends Application implements ContactDirectory {
             if (!nameField.getText().equals("Choose a contact!")) {
                 File file = new File("./src/ContactSaves/" + nameField.getText() + ".dat");
                 System.out.println("File deletion: " + file.delete()); // Print true or false.
+                contactListView.getSelectionModel().clearSelection();
                 contactListView.getItems().remove(nameField.getText()); // Remove name from combo box
                 hashTableMap.remove(nameField.getText()); // Remove name from the search map
             }
         });
-
         // Create pane for the buttons
-        HBox mainButtonPane = new HBox();
+        HBox mainButtonPane = new HBox(5);
         mainButtonPane.setStyle("-fx-border-color: orange");
         mainButtonPane.setPadding(new Insets(5, 5, 5, 5));
+        mainButtonPane.getChildren().add(newContactBT);
         mainButtonPane.getChildren().add(edit);
         mainButtonPane.getChildren().add(saveContact);
         mainButtonPane.getChildren().add(deleteContact);
+        Button togglePanesBT = new Button("More Options");
+        mainButtonPane.getChildren().add(togglePanesBT);
 
 
-        // Add nodes to pane
-        mainPane.getChildren().add(searchOptionsPane);
-        mainPane.getChildren().add(contactPane);
         FlowPane rightPane = new FlowPane();
         rightPane.setHgap(5);
         rightPane.setVgap(5);
+        // The first item in the rightPane should be the button Pane. The other items are added with the toggle button.
         rightPane.getChildren().add(mainButtonPane);
-        rightPane.getChildren().add(new EmailStackPane(this.emailField));
-        rightPane.getChildren().add(new LargestBirthdayPane(this.nameField));
-        rightPane.getChildren().add(new FindPhoneNumberPane());
-        TransferContactPane transferContactPane = new TransferContactPane(contactListView);
-        rightPane.getChildren().add(transferContactPane);
 
+
+        /* This creates the toggle button.
+         Initialize toggleBT as false since it hasn't been toggled yet. */
+        AtomicReference<Boolean> toggleBT = new AtomicReference<>(false);
+        EmailStackPane emailStackPane = new EmailStackPane(this.emailField);
+        LargestBirthdayPane largestBirthdayPane = new LargestBirthdayPane(this.nameField);
+        FindPhoneNumberPane findPhoneNumberPane = new FindPhoneNumberPane();
+        TransferContactPane transferContactPane = new TransferContactPane(contactListView);
+
+        // This makes it so that when the More Options button is pressed, it either displays or removes the extra panes.
+        togglePanesBT.setOnAction(e->
+            toggleBT.set(toggleOptionPanes(toggleBT.get(), rightPane, emailStackPane, largestBirthdayPane, findPhoneNumberPane, transferContactPane))
+        );
+
+
+        // Create the left side pane & the contactPane by adding it to the mainPane
+        mainPane.getChildren().add(searchOptionsPane);
+        mainPane.getChildren().add(contactPane);
         mainPane.getChildren().add(rightPane);
 
 
@@ -275,7 +295,7 @@ public class PaintApplication extends Application implements ContactDirectory {
         return array;
     }
 
-    private <E extends Comparable<E>> void comparePrint(E e, E r) {
+    public static <E extends Comparable<E>> void comparePrint(E e, E r) {
         if (e.compareTo(r) > 0)
             System.out.println("Larger!");
         else if (e.compareTo(r) == 0)
@@ -283,50 +303,72 @@ public class PaintApplication extends Application implements ContactDirectory {
         else System.out.println("Smaller!");
     }
 
-    // This method is used to display a contact
-    protected void displayContact(ListView<String> contactComboBox) {
-        String contactName = contactComboBox.getSelectionModel().getSelectedItem();
+    /** This method is used to retrieve and to display a contact in the contact text fields */
+    public void displayContact(ListView<String> contactListView) {
+        String contactName = contactListView.getSelectionModel().getSelectedItem();
         // Find the Contact Object based on the chosen name
         Contact chosenContact;
 
-        // This try-catch code is important. When a contact is deleted, the program runs into errors
-        // because it was accessing the deleted Contact. So, when an Exception during deletion,
-        // the code switches away from that contact to the first one in the ListView, but it
-        // doesn't have to be the first one; it can be any of them. Point is: it switches away
-        // from the deleted contact.
+        /* This try-catch code is important. When a contact is deleted, the program runs into errors
+         because it was accessing the deleted Contact. So, when an Exception during deletion,
+         the code switches away from that contact to the first one in the ListView, but it
+         doesn't have to be the first one; it can be any of them. Point is: it switches away
+         from the deleted contact. */
         try {
             chosenContact = getSelectedContact(contactName);
         } catch (Exception ex) {
-            String firstName = contactComboBox.getItems().get(0);
+            String firstName = contactListView.getItems().get(0);
             try {
                 chosenContact = getSelectedContact(firstName);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
-        displayContact(chosenContact, this.nameField, this.addressField, this.birthdayField,
-                this.emailField, this.phoneNumberField, this.notesArea);
+        displayContact(chosenContact);
     }
 
-    public static void displayContact(Contact chosenContact, TextField nameField, TextField addressField, TextField birthdayField,
-                                      TextField emailField, TextField phoneNumberField, TextArea notesArea) {
+    /** This method displays the contact */
+    public void displayContact(Contact chosenContact) {
 
-        // Set the fields
-        nameField.setText(chosenContact.getName());
-        addressField.setText(chosenContact.getAddress());
-        birthdayField.setText(chosenContact.getBirthdayFileFormat());
-        emailField.setText(chosenContact.getEmail());
-        phoneNumberField.setText(String.valueOf(chosenContact.getPhoneNumber()));
-        notesArea.setText(chosenContact.getNotes());
+        this.nameField.setText(chosenContact.getName());
+        this.addressField.setText(chosenContact.getAddress());
+        this.birthdayField.setText(chosenContact.getBirthdayFileFormat());
+        this.emailField.setText(chosenContact.getEmail());
+        this.phoneNumberField.setText(String.valueOf(chosenContact.getPhoneNumber()));
+        this.notesArea.setText(chosenContact.getNotes());
     }
 
     /**
      * This method returns true if all the fields are filled in. The notes text area is ignored
      * because that is allowed to be empty.
      */
-    public boolean fieldsFull() {
+    public boolean isFieldsFull() {
         return (!this.nameField.getText().isEmpty()) && (!this.addressField.getText().isEmpty())
                 && (!this.birthdayField.getText().isEmpty()) && (!emailField.getText().isEmpty())
                 && (!this.phoneNumberField.getText().isEmpty());
+    }
+    public void clearFields() {
+        nameField.clear();
+        addressField.clear();
+        birthdayField.clear();
+        emailField.clear();
+        phoneNumberField.clear();
+        notesArea.clear();
+    }
+    protected static boolean toggleOptionPanes(Boolean panesToggled, FlowPane rightPane, EmailStackPane emailStackPane, LargestBirthdayPane largestBirthdayPane,
+                                   FindPhoneNumberPane findPhoneNumberPane, TransferContactPane transferContactPane) {
+        if (!panesToggled) {
+            rightPane.getChildren().add(emailStackPane);
+            rightPane.getChildren().add(largestBirthdayPane);
+            rightPane.getChildren().add(findPhoneNumberPane);
+            rightPane.getChildren().add(transferContactPane);
+            // The options have been toggled. Flip boolean value. Return true.
+            return true;
+        }
+        else {
+            rightPane.getChildren().removeAll(emailStackPane, largestBirthdayPane, findPhoneNumberPane, transferContactPane);
+            // The options have been toggled. Flip boolean value. Return false.
+            return false;
+        }
     }
 }

@@ -16,7 +16,7 @@ import java.util.Stack;
 
 public class EmailStackPane extends BorderPane {
     private EmailStackPane() {
-
+        // Private because this constructor would be invalid.
     }
 
     /**

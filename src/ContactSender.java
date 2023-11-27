@@ -33,7 +33,7 @@ public class ContactSender {
     }
 
     protected static void getErrorFormattingStage() {
-        Text error = new Text("Error. The IP is invalid or there is no user to receive data.");
+        Text error = new Text("Error. The IP is invalid, or there is no user to receive data.");
         BorderPane errorPane = new BorderPane();
         errorPane.setCenter(error);
         Scene errorScene = new Scene(errorPane, 300, 300);

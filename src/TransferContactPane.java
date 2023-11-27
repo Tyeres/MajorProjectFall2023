@@ -3,18 +3,22 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
+/**
+ * This class is a pane that contains both panes for receiving and sending contacts.
+ */
 public class TransferContactPane extends javafx.scene.layout.BorderPane {
     private TransferContactPane() {
-
+        // Set to private so that it is not used.
     }
     public TransferContactPane(ListView<String> listView) {
             this.setPadding(new Insets(5, 5, 5, 5));
-            this.setStyle("-fx-border-color: green");
+            // color is brown
+            this.setStyle("-fx-border-color: SIENNA");
 
             VBox sendPane = new VBox(5);
             sendPane.setPadding(new Insets(5, 5, 5, 5));
             sendPane.setAlignment(Pos.CENTER);
-            sendPane.setStyle("-fx-border-color: blue");
+            sendPane.setStyle("-fx-border-color: MEDIUMAQUAMARINE");
             TextField IPField = new TextField();
             Label IPLabel = new Label("Input IP Here", IPField);
             IPLabel.setContentDisplay(ContentDisplay.BOTTOM);
@@ -42,7 +46,7 @@ public class TransferContactPane extends javafx.scene.layout.BorderPane {
             receivePane.setAlignment(Pos.CENTER);
             receivePane.setPadding(new Insets(5, 5, 5, 5));
 
-            receivePane.setStyle("-fx-border-color: yellow");
+//            receivePane.setStyle("-fx-border-color: LIGHTCORAL");
             Button receiveContactButton = new Button("Receive Contact");
 
             receivePane.getChildren().add(receiveContactButton);
