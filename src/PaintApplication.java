@@ -245,8 +245,6 @@ public class PaintApplication extends Application implements ContactDirectory {
             // There is only one Contact object per file, which is the searched object. Return it.
             return (Contact) inputStream.readObject();
         } catch (FileNotFoundException e) {
-            System.out.println("File not found.");
-            System.out.println(e.getMessage());
             throw new FileNotFoundException();
         } catch (Exception ee) {
             System.out.println("Strange error in getSelectedContact method.");
