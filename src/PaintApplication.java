@@ -161,9 +161,9 @@ public class PaintApplication extends Application implements ContactDirectory {
             if (!nameField.getText().equals("Choose a contact!")) {
                 File file = new File("./src/ContactSaves/" + nameField.getText() + ".dat");
                 System.out.println("File deletion: " + file.delete()); // Print true or false.
-                contactListView.getSelectionModel().clearSelection();
                 contactListView.getItems().remove(nameField.getText()); // Remove name from combo box
                 hashTableMap.remove(nameField.getText()); // Remove name from the search map
+                contactListView.getSelectionModel().clearSelection();
             }
         });
         // Create pane for the buttons
