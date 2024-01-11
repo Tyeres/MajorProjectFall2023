@@ -195,7 +195,7 @@ public class PaintApplication extends Application implements ContactDirectory {
 
         // This makes it so that when the More Options button is pressed, it either displays or removes the extra panes.
         togglePanesBT.setOnAction(e->
-            toggleBT.set(toggleOptionPanes(toggleBT.get(), rightPane, emailStackPane, largestBirthdayPane, findPhoneNumberPane, transferContactPane))
+                toggleBT.set(toggleOptionPanes(toggleBT.get(), rightPane, emailStackPane, largestBirthdayPane, findPhoneNumberPane, transferContactPane))
         );
 
 
@@ -354,7 +354,7 @@ public class PaintApplication extends Application implements ContactDirectory {
         notesArea.clear();
     }
     protected static boolean toggleOptionPanes(Boolean panesToggled, FlowPane rightPane, EmailStackPane emailStackPane, LargestBirthdayPane largestBirthdayPane,
-                                   FindPhoneNumberPane findPhoneNumberPane, TransferContactPane transferContactPane) {
+                                               FindPhoneNumberPane findPhoneNumberPane, TransferContactPane transferContactPane) {
         if (!panesToggled) {
             rightPane.getChildren().add(emailStackPane);
             rightPane.getChildren().add(largestBirthdayPane);

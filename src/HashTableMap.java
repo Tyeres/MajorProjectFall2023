@@ -11,12 +11,12 @@ public final class HashTableMap implements ContactDirectory {
     // The largest array needed if only using alphabetical letters would be 89370. I went a little higher just in case.
     public HashTableMap() {
         this(100_000);
-        buildInitialMap();
     }
 
     public HashTableMap(int mapSize) {
         this.mapSize = mapSize;
         this.initialMap = new String[mapSize];
+        buildInitialMap();
     }
     /**
      * This searches to see if the name exists in the map.
